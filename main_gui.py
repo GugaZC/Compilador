@@ -1,61 +1,40 @@
-from lexer import Lexer
-from lexer import tokens
+from lexer_gui import Lexer
+from lexer_gui import tokens
 from ply import yacc
-
-# def p_assign_int(p):
-#     '''assign : VAR_INT ID EQUALS term'''
-#     if not isinstance(p[4], int):
-#         raise ValueError( "Expected int, got type {}".format( type(p[4] ) ) )
-#     p[2] = p[4]
+from os import remove
 
 
-# def p_assign_float(p):
-#     '''assign : VAR_FLOAT ID EQUALS term'''
-#     if not isinstance(p[4], float):
-#         raise ValueError( "Expected float, got type {}".format( type(p[4] ) ) )
-#     p[2] = p[4]
+def p_exrp_condition(p):
+    '''exrp_condition   : LPAREN expr_binary RPAREN'''
+    p[0] = ("EXPR_CONDITION", p[2])
 
-# def p_term_mul(p):
-#     '''term : term TIMES factor'''
-#     p[0] = p[1] * p[3]
 
-# def p_term_sum(p):
-#     '''term : term PLUS factor
-#             | assign PLUS factor '''
-#     p[0] = p[1] + p[3]
-
-# def p_term_sub(p):
-#     '''term : term MINUS factor'''
-#     p[0] = p[1] - p[3]
-
-# def p_term_factor(p):
-#     '''term : factor'''
-#     p[0] = p[1]
-
-# def p_factor(p):
-#     '''factor : INTEGER
-#               | FLOAT'''
-#     p[0] = p[1]
-
-def p_expr_plus(p):
-    '''expr : term PLUS factor'''
-    p[0] = ('+', p[1], p[3])
+def p_expr_binary(p):
+    '''expr_binary : term
+            | expr_binary PLUS expr_binary
+            | expr_binary MINUS expr_binary
+            | expr_binary GT expr_binary'''
+    if len(p) == 2:
+        p[0] = p[1]
+    else:
+        p[0] = (str(p[2]), p[1], p[3])
 
 
 def p_term_factor(p):
     '''term : factor'''
-    p[0] = p[1]
+    p[0] = ('NUM', p[1])
 
 
 def p_factor(p):
     '''factor : INTEGER'''
-    p[0] = ('NUM', p[1])
+    p[0] = p[1]
 
-data = "1+2"
+
+data = "(5>(1+2))"
 lexer = Lexer()
-_tokens = lexer.tokenyze( data )
+_tokens = lexer.tokenyze(data)
 for item in _tokens:
-    print( item )
+    print(item)
 
 yacc.yacc()
 y = yacc.parse(data)
