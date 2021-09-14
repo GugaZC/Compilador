@@ -1,110 +1,44 @@
-# ATIVIDADE PRÁTICA - reconhecedor de estruturas em C
+from lexer import tokens
+from lexer import lexer
+from ply import yacc
 
-from ply import *
+def p_while(p):
+    '''while :  WHILE expr_condition'''
+    p[0] = ("WHILE", p[2])
 
-# Palavras reservadas <palavra>:<TOKEN>
-reserved = {
-    'if': 'IF',
-    'else': 'ELSE',
-    'int': 'TYPE_INT',
-    'float': 'TYPE_FLOAT',
-    'double': 'TYPE_DOUBLE',
-    'char': 'TYPE_CHAR',
-    'for': 'FOR',
-    'while': 'WHILE',
-    'main': 'MAIN',
-    'return': 'RETURN'
-}
-
-# Demais TOKENS
-tokens = [
-             'EQUALS', 'PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'POWER',
-             'LPAREN', 'RPAREN', 'LT', 'LE', 'GT', 'GE', 'NE',
-             'COMMA', 'SEMI', 'INTEGER', 'FLOAT', 'STRING',
-             'ID', 'NEWLINE', 'SEMICOLON', 'RBRACES', 'LBRACES', 'SQUOTES', 'DQUOTES'
-         ] + list(reserved.values())
-
-t_ignore = ' \t'
+def p_exrp_condition(p):
+    '''expr_condition   : LPAREN expr_binary RPAREN'''
+    p[0] = ("EXPR_CONDITION", p[2])
 
 
-def t_REM(t):
-    r'REM .*'
-    return t
+def p_expr_binary(p):
+    '''expr_binary : term
+            | LPAREN expr_binary RPAREN
+            | expr_binary PLUS expr_binary
+            | expr_binary MINUS expr_binary
+            | expr_binary GT expr_binary'''
+    if len(p) == 2:
+        p[0] = p[1]
+    else:
+        p[0] = (str(p[2]), p[1], p[3])
 
 
-# Definição de Identificador com expressão regular r'<expressão>'
-def t_ID(t):
-    r'[a-zA-Z][a-zA-Z0-9]*'
-    t.type = reserved.get(t.value, 'ID')  # Check for reserved words
-    return t
+def p_term_factor(p):
+    '''term : factor'''
+    p[0] = ('NUM', p[1])
 
 
-t_EQUALS = r'='
-t_PLUS = r'\+'
-t_MINUS = r'-'
-t_TIMES = r'\*'
-t_POWER = r'\^'
-t_DIVIDE = r'/'
-t_LPAREN = r'\('
-t_RPAREN = r'\)'
-t_RBRACES = r'\}'
-t_LBRACES = r'\{'
-t_SEMICOLON = r'\;'
-t_LT = r'<'
-t_LE = r'<='
-t_GT = r'>'
-t_GE = r'>='
-t_NE = r'!='
-t_COMMA = r'\,'
-t_SEMI = r';'
-t_INTEGER = r'\d+'
-t_FLOAT = r'((\d*\.\d+)(E[\+-]?\d+)?|([1-9]\d*E[\+-]?\d+))'
-t_STRING = r'\".*?\"'
-t_SQUOTES = r'\''
-t_DQUOTES = r'\"'
+def p_factor(p):
+    '''factor : INTEGER'''
+    p[0] = p[1]
 
 
-def t_NEWLINE(t):
-    r'\n'
-    t.lexer.lineno += 1
-    return t
-
-
-def t_error(t):
-    print("Illegal character %s" % t.value[0])
-    t.lexer.skip(1)
-
-
-# Constroi o analisador léxico
-lexer = lex.lex()
-
-# string de teste
-data = '''
-int main()
-{
-    int x = 0;
-    int i; 
-    float y = 2.0;
-    char j = 'a';
-    double z = 10;
-    for(i = 0; i<10; i++){
-        x++;
-    }
-    while(x>=0){
-        x--;
-    }
-    if(y>0){
-        j = 'b';
-    }else{
-        x++;
-    }
-    return 0;
-}
-'''
-
-# string de teste como entrada do analisador léxico
+data = "while(5>(1+2))"
 lexer.input(data)
 
-# Tokenização
-for tok in lexer:
-    print(tok)
+for item in lexer:
+    print(item)
+
+yacc.yacc()
+y = yacc.parse(data)
+print(y)
