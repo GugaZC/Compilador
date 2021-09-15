@@ -24,7 +24,7 @@ tokens = [
              'ID', 'NEWLINE', 'SEMICOLON', 'RBRACES', 'LBRACES', 'SQUOTES', 'DQUOTES'
          ] + list(reserved.values())
 
-t_ignore = ' \t'
+t_ignore = ' \t\n'
 
 
 def t_REM(t):
@@ -77,33 +77,35 @@ def t_error(t):
 # Constroi o analisador léxico
 lexer = lex.lex()
 
+if __name__ == "__main__":
 # string de teste
-data = '''
-int main()
-{
-    int x = 0;
-    int i; 
-    float y = 2.0;
-    char j = 'a';
-    double z = 10;
-    for(i = 0; i<10; i++){
-        x++;
+    data = '''
+    int main()
+    {
+        int x = 0;
+        int i; 
+        float y = 2.0;
+        char j = 'a';
+        double z = 10;
+        for(i = 0; i<10; i++){
+            x++;
+        }
+        while(x>=0){
+            x--;
+        }
+        if(y>0){
+            j = 'b';
+        }
+        else{
+            x++;
+        }
+        return 0;
     }
-    while(x>=0){
-        x--;
-    }
-    if(y>0){
-        j = 'b';
-    }else{
-        x++;
-    }
-    return 0;
-}
-'''
+    '''
 
-# string de teste como entrada do analisador léxico
-lexer.input(data)
+    # string de teste como entrada do analisador léxico
+    lexer.input(data)
 
-# Tokenização
-for tok in lexer:
-    print(tok)
+    # Tokenização
+    for tok in lexer:
+        print(tok)
