@@ -57,12 +57,22 @@ t_GE = r'>='
 t_NE = r'!='
 t_COMMA = r'\,'
 t_SEMI = r';'
-t_INTEGER = r'\d+'
-t_FLOAT = r'((\d*\.\d+)(E[\+-]?\d+)?|([1-9]\d*E[\+-]?\d+))'
+# t_INTEGER = r'\d+'
+# t_FLOAT = r'((\d*\.\d+)(E[\+-]?\d+)?|([1-9]\d*E[\+-]?\d+))'
 t_STRING = r'\".*?\"'
 t_SQUOTES = r'\''
 t_DQUOTES = r'\"'
 
+
+def t_INTEGER(t):
+    r'\b(?<!\.)\d+(?!\.)\b'
+    t.value = int(t.value)
+    return t
+
+def t_FLOAT(t):
+    r'([0-9]+([.][0-9]*)?|[.][0-9]+)'
+    t.value = float(t.value)
+    return t
 
 def t_NEWLINE(t):
     r'\n'
