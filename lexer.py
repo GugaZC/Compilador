@@ -13,7 +13,8 @@ reserved = {
     'for': 'FOR',
     'while': 'WHILE',
     'main': 'MAIN',
-    'return': 'RETURN'
+    'return': 'RETURN',
+    'void': 'VOID'
 }
 
 # Demais TOKENS

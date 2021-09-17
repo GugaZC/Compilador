@@ -4,7 +4,7 @@ from ply import yacc
 
 
 def p_main(p):
-    '''main    :  TYPE_INT MAIN LPAREN RPAREN block'''
+    '''main    :  VOID MAIN LPAREN RPAREN block'''
     p[0] = ("MAIN", p[5])
 
 
@@ -16,7 +16,7 @@ def p_while(p):
     else: # EOL
         p[0] = ("WHILE", p[2])
 
-# TODOS fazer bloco principal, condicionais (IF ELSE)
+
 def p_if(p):
     '''if   : IF expr_condition block
             | IF expr_condition blockif else'''
