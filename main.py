@@ -3,21 +3,57 @@ from lexer import lexer
 from ply import yacc
 
 
+def p_main(p):
+    '''main    :  TYPE_INT MAIN LPAREN RPAREN block'''
+    p[0] = ("MAIN", p[5])
+
+
 def p_while(p):
     '''while    :  WHILE expr_condition EOL
                 |  WHILE expr_condition block'''
-    if p[3] != ";":
+    if p[3] != ";": # block
         p[0] = ("WHILE", p[2], p[3])
-    else:
+    else: # EOL
         p[0] = ("WHILE", p[2])
 
 # TODOS fazer bloco principal, condicionais (IF ELSE)
+def p_if(p):
+    '''if   : IF expr_condition block
+            | IF expr_condition blockif else'''
+    if len(p) == 5: #else
+        p[0] = ("IF",  p[2], p[3], p[4])
+    else:
+        p[0] = ("IF", p[2], p[3])
 
+def p_else(p):
+    '''else :  ELSE block'''
+    p[0] = ("ELSE", p[2])
 
+def p_for(p):
+    '''for  :  FOR LPAREN ID EQUALS expr_binary SEMICOLON expr_binary SEMICOLON increment_for RPAREN block
+            |  FOR LPAREN type ID EQUALS expr_binary SEMICOLON expr_binary SEMICOLON increment_for RPAREN block'''
+    if len(p) == 13: # com type
+        p[0] = ("FOR", p[4], p[8], p[12])
+    else: # sem type
+        p[0] = ("FOR", p[3], p[7], p[11])
+
+def p_for_increment(p):
+    '''increment_for    :   ID PLUS PLUS
+                        |   ID EQUALS expr_binary
+                        |   ID MINUS MINUS'''
+    p[0] = p[1]
+
+def p_bif(p):
+    '''blockif  : LBRACES assign RBRACES
+                | LBRACES while RBRACES
+                | LBRACES if RBRACES'''
+    p[0] = ('BLOCK', p[2])
 
 def p_block(p):
     '''block : LBRACES assign EOB
-             | LBRACES while EOB'''
+             | LBRACES while EOB
+             | LBRACES if EOB
+             | LBRACES for EOB'''
     if str(p[3]) == '}':
         p[0] = ('BLOCK', p[2])
     else:
@@ -27,6 +63,8 @@ def p_block(p):
 def p_end_of_block(p):
     '''EOB  : RBRACES assign
             | RBRACES while
+            | RBRACES if
+            | RBRACES for
             | RBRACES'''
     if len(p) < 3:
         p[0] = p[1]
@@ -45,6 +83,7 @@ def p_type(p):
 def p_end_of_line(p):
     '''EOL  : SEMICOLON assign
             | SEMICOLON while
+            | SEMICOLON if
             | SEMICOLON'''
     if len(p) < 3:
         p[0] = p[1]
@@ -71,7 +110,8 @@ def p_expr_binary(p):
     '''expr_binary : term
             | expr_binary PLUS expr_binary
             | expr_binary MINUS expr_binary
-            | expr_binary GT expr_binary'''
+            | expr_binary GT expr_binary
+            | expr_binary LT expr_binary'''
     if len(p) == 2:
         p[0] = p[1]
     else:
@@ -94,7 +134,8 @@ def p_factor(p):
     p[0] = ('INTEGER', p[1])
 
 
-data = "while(1){int x = 2;int y = 2;} int y = 2;"
+file = open("main.c", "r")
+data = file.read()
 lexer.input(data)
 
 for item in lexer:
