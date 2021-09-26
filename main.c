@@ -1,15 +1,15 @@
-void main()
-{
-    for (int i = 0; i < count; i++)
-    {
-        while(1);
+void main(){
+    int i = 0;
+    int x =2;
+
+    while(1){
+        int y = 0;
+        int a = 2;
+        while(1){
+            int b = x;
+            y = b;
+        }
     }
-    for (int i = 0; i < count; i++)
-    {
-        while(1);
-    }
-    if(2){int a =3;}
-    else{
-        int a =2;
-    }
+
+
 }

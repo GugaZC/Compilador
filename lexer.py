@@ -70,10 +70,12 @@ def t_INTEGER(t):
     t.value = int(t.value)
     return t
 
+
 def t_FLOAT(t):
     r'([0-9]+([.][0-9]*)?|[.][0-9]+)'
     t.value = float(t.value)
     return t
+
 
 def t_NEWLINE(t):
     r'\n'
@@ -85,11 +87,12 @@ def t_error(t):
     print("Illegal character %s" % t.value[0])
     t.lexer.skip(1)
 
+
 # Constroi o analisador léxico
 lexer = lex.lex()
 
 if __name__ == "__main__":
-# string de teste
+    # string de teste
     data = '''
     int main()
     {
