@@ -4,6 +4,7 @@ from ply import yacc
 
 table = {'VARIABLE': {}}
 stash = {}
+verify = {}
 context = 0
 
 
@@ -108,22 +109,42 @@ def p_assign(p):
     '''assign   : ID EQUALS expr_binary EOL
                 | type assign'''
     if len(p) >= 5:
-        if p[3] in table['VARIABLE'].keys():
+       
+        if p[3] in stash: 
+            # if "TYPE_"+str(p[1]).upper() == stash[p[2][0]]['type']:
+            #     del stash[p[2][0]]
+            if len(stash[p[2][0]]['type']) < 1:
+                verify[p[2][0]] = []
+                print(str(p[2]))
+                verify[p[2][0]].append(p[2][0])
+            else: 
+                raise AssertionError("Variable " + p[2][0] + ' is not ' + stash[p[2][0]]['type'])
+        if p[3] in table['VARIABLE']:
             if table['VARIABLE'][p[3]]['context'] < context:
                 raise AssertionError("Problema no contexto")
-        p[0] = p[1]
+        p[0] = [p[1], p[3]]
 
     elif len(p) == 3:
-        p[0] = ("TYPE_" + str(p[1]).upper(), p[2])
-        if not p[2] in table["VARIABLE"]:
-            if p[2] in stash:
-                if stash[p[2]]["context"] <= context:
-                    del stash[p[2]]
+       
+        p[0] = ("TYPE_" + str(p[1]).upper(), p[2][0])
+        if not p[2][1] in table["VARIABLE"]:
+            if p[2][1] in stash:
+                if stash[p[2][1]]["context"] <= context:
+                    stash[p[2][1]]['type'] = "TYPE_" + str(p[1]).upper() 
                 else:
-                    raise AssertionError("Variable " + p[2] + " not in right context")
-            table["VARIABLE"][p[2]] = {'type': "TYPE_" + str(p[1]).upper(), 'value': "", 'context': context}
+                    raise AssertionError("Variable " + p[2][0] + " not in right context")
         else:
             raise AssertionError("Variable already exists")
+        if p[2][0] in verify:
+            for var in verify[p[2][0]]:
+                print('var '+ var)
+                print("table ", str(table["VARIABLE"]))
+                print("p20 "+ p[2][0])
+                print('verify '+str(verify))
+                if table["VARIABLE"][var]['type'] != "TYPE_" + str(p[1]).upper():
+                    raise AssertionError("TYPEERROR " + p[2][0] + ' is not ' + stash[p[2][0]]['type'])
+            del verify[p[2][0]]
+        table["VARIABLE"][p[2][0]] = {'type': "TYPE_" + str(p[1]).upper(), 'value': "", 'context': context}
 
 
 def p_exrp_condition(p):
@@ -152,14 +173,14 @@ def p_term(p):
 def p_variable(p):
     '''variable : ID'''
     if not p[1] in table['VARIABLE']:
-        stash[p[1]] = {'context': context}
+        stash[p[1]] = {'context': context, 'type': ''}
 
         # raise AssertionError("Variable " + p[1] + " does not exists " + str(table))
     else:
         if table['VARIABLE'][p[1]]['context'] < context:
             raise AssertionError("Deu ruim no context")
         # p[0] = table['VARIABLE'][p[1]]
-    p[0] = p[1]
+    p[0] = p[1] 
 
 
 def p_factor_int(p):

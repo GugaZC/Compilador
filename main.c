@@ -1,14 +1,17 @@
 void main(){
     int i = 0;
-    int x =2;
-
+    int x = 2;
+    float p = 3.9;
+    
     while(1){
-        int y = 0;
-        int a = 2;
+        float a = p;
+    
         while(1){
             int b = x;
-            y = b;
+            float y = p;
+            a = b;
         }
+
     }
 
 
