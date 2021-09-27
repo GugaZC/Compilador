@@ -268,10 +268,18 @@ file = open("main.c", "r")
 data = file.read()
 lexer.input(data)
 
+print("Tokens geradas na análise léxica:")
+for item in lexer:
+    print(item)
+
+
 yacc.yacc()
 y = yacc.parse(data)
-# print(y)
+
+
+print("\nTabela de símbolos")
 print(str(table))
+
 if len(stash) > 0:
     for entry in stash:
         print("entry in stash: {}".format(str(entry)))
