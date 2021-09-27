@@ -1,1 +1,5 @@
 .idea
+parser.out
+parsetab.py
+__pycache__/lexer.cpython-38.pyc
+__pycache__/parsetab.cpython-38.pyc
